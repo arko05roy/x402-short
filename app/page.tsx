@@ -1,17 +1,24 @@
 'use client';
 
-import { useState } from 'react';
-import { useAccount, useWalletClient } from 'wagmi';
+import { useState, useEffect } from 'react';
+import { useAccount, useWalletClient, useBalance } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { wrapFetchWithPaymentBrowser } from '@/lib/x402-browser';
 import { decodeXPaymentResponse } from 'x402/shared';
 
 const RECEIVER_ADDRESS = '0xabaf59180e0209bdb8b3048bfbe64e855074c0c4';
 const NETWORK = 'base-sepolia';
+const USDC_ADDRESS = '0x036CbD53842c5426634e7929541eC2318f3dCF7e'; // Base Sepolia USDC
 
 export default function Home() {
     const { address, isConnected } = useAccount();
     const { data: walletClient } = useWalletClient();
+    
+    // Get USDC balance
+    const { data: usdcBalance } = useBalance({
+        address: address,
+        token: USDC_ADDRESS as `0x${string}`,
+    });
     
     const [url, setUrl] = useState('');
     const [shortUrl, setShortUrl] = useState('');
@@ -139,7 +146,6 @@ export default function Home() {
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(shortUrl);
-        alert('Copied to clipboard!');
     };
 
     return (
@@ -147,15 +153,46 @@ export default function Home() {
             <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl">
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-gray-800 mb-2">
-                        URL Shortener
+                        x402 short
                     </h1>
                     <p className="text-gray-600">
-                        Shorten your URLs with crypto payments
+                        Shorten your URLs with x402
                     </p>
                 </div>
 
-                <div className="flex justify-end mb-4">
-                    <ConnectButton />
+                <div className="mb-6">
+                    <div className="flex justify-end mb-3">
+                        <ConnectButton />
+                    </div>
+                    
+                    {isConnected && (
+                        <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg p-4 border border-indigo-100">
+                            <div className="flex items-center justify-between mb-3">
+                                <div>
+                                    <p className="text-sm text-gray-600 mb-1">USDC Balance</p>
+                                    <p className="text-2xl font-bold text-gray-800">
+                                        {usdcBalance ? `${parseFloat(usdcBalance.formatted).toFixed(4)} USDC` : '0.0000 USDC'}
+                                    </p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-xs text-gray-500 mb-1">Network</p>
+                                    <p className="text-sm font-medium text-indigo-600">Base Sepolia</p>
+                                </div>
+                            </div>
+                            
+                            <a
+                                href="https://faucet.circle.com/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-2 w-full bg-white hover:bg-gray-50 text-indigo-600 font-medium py-2 px-4 rounded-lg border border-indigo-200 transition-colors"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                Get Testnet USDC from Faucet
+                            </a>
+                        </div>
+                    )}
                 </div>
 
                 <div className="space-y-4">
@@ -222,17 +259,6 @@ export default function Home() {
                     )}
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-gray-200">
-                    <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                        How it works
-                    </h2>
-                    <ul className="space-y-2 text-sm text-gray-600">
-                        <li>• Enter your long URL</li>
-                        <li>• Pay 0.001 USDC on Base Sepolia via x402</li>
-                        <li>• Get your shortened URL instantly</li>
-                        <li>• Funds go to {RECEIVER_ADDRESS.slice(0, 6)}...{RECEIVER_ADDRESS.slice(-4)}</li>
-                    </ul>
-                </div>
             </div>
         </div>
     );
