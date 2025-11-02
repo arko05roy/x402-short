@@ -7,7 +7,7 @@ const PAYMENT_AMOUNT_USDC = '0.001'; // $0.001 USDC
 
 // Testnet facilitator config (no auth required)
 const testnetFacilitator = {
-    url: FACILITATOR_URL,
+    url: FACILITATOR_URL as `${string}://${string}`,
 };
 
 export interface PaymentRequest {
@@ -31,8 +31,8 @@ export async function getPaymentRequest(): Promise<PaymentRequest> {
 export async function verifyPayment(
     paymentProof: string,
     paymentRequirements: {
-        scheme: string;
-        network: string;
+        scheme: 'exact';
+        network: 'base-sepolia' | 'base' | 'avalanche-fuji' | 'avalanche' | 'iotex';
         maxAmountRequired: string;
         resource: string;
         description: string;
@@ -40,7 +40,7 @@ export async function verifyPayment(
         payTo: string;
         maxTimeoutSeconds: number;
         asset: string;
-        extra?: any;
+        extra?: Record<string, any>;
     }
 ): Promise<boolean> {
     try {

@@ -39,11 +39,11 @@ export async function POST(request: NextRequest) {
         
         // Define payment requirements (used for both 402 response and verification)
         const paymentRequirement = {
-            scheme: 'exact',
+            scheme: 'exact' as const,
             description: 'URL Shortening Service',
-            asset: '0x036CbD53842c5426634e7929541eC2318f3dCF7e', // USDC on Base
+            asset: '0x036CbD53842c5426634e7929541eC2318f3dCF7e', // USDC on Base 
             maxAmountRequired: '1000', // 0.001 USDC in smallest units (6 decimals)
-            network: 'base-sepolia',
+            network: 'base-sepolia' as const,
             resource: resourceUrl, // Full URL required by x402 Zod validation
             mimeType: 'application/json',
             payTo: RECEIVER_ADDRESS,

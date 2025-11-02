@@ -8,10 +8,10 @@ const supabase = createClient(
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { code: string } }
+    { params }: { params: Promise<{ code: string }> }
 ) {
     try {
-        const { code } = params;
+        const { code } = await params;
 
         // Look up the URL in database
         const { data, error } = await supabase
