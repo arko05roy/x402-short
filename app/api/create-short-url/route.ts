@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         const paymentRequirement = {
             scheme: 'exact',
             description: 'URL Shortening Service',
-            asset: '0x036CbD53842c5426634e7929541eC2318f3dCF7e', // USDC on Base Sepolia (correct address)
+            asset: '0x036CbD53842c5426634e7929541eC2318f3dCF7e', // USDC on Base
             maxAmountRequired: '1000', // 0.001 USDC in smallest units (6 decimals)
             network: 'base-sepolia',
             resource: resourceUrl, // Full URL required by x402 Zod validation
